@@ -1,0 +1,30 @@
+<h2>Products</h2>
+
+<div *ngFor="let product of products; index as productId">
+  <h3>
+    <a [title] = "product.name + ' details'" [routerLink]="['/products', productId]">
+      <img [src]="product.url" [style]="'width:200px'"/>
+    {{product.name | uppercase}}
+    </a>
+  </h3> 
+  <p>Discounted Price: {{product.price | currency:"INR"}}</p>
+
+  <p [style]= "'text-decoration: line-through'">Actual Price: {{product.price | double | currency:"INR"}}</p>
+
+  <p appHighlight *ngIf="product.description">
+    Description: {{product.description}}
+  </p>
+
+  <button [style]="'background-color:green'" (click)="share(product.name)">
+    Share
+  </button>
+
+  <app-product-alerts (notify) = "onNotify()" [product]="product"></app-product-alerts>
+</div>
+
+
+<!-- 
+Copyright Google LLC. All Rights Reserved.
+Use of this source code is governed by an MIT-style license that
+can be found in the LICENSE file at https://angular.io/license
+-->

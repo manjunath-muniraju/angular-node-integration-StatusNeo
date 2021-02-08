@@ -1,0 +1,33 @@
+<h3>Cart</h3>
+<a (click)="routeTo400()"> 404 Route</a>
+<a (click)="routeTo500()"> 500 Route</a>
+<a (click)="routeToGenericError()"> Error Route</a>
+<p>
+  <a routerLink = "/shipping"> Shipping Prices</a>
+</p>
+
+
+<div class= "item" *ngFor = "let item of items; index as productNumber">
+  <span> {{ item.name }} </span>
+  <span> {{ item.price | currency: "INR" }} </span>
+  <button [style]= "'background-color:red'" (click)="removeItem(productNumber)">X</button>
+</div>
+
+<form [formGroup] = "checkoutForm" (ngSubmit) = "onSubmit()">
+
+  <div>
+    <label for ="name">
+      Name
+    </label>
+    <input id="name" type= "text" formControlName = "name" >
+  </div>
+
+  <div>
+    <label for= "address">
+      Address
+    </label>
+    <input id="address" type= "text" formControlName = "address" >
+  </div>
+
+  <button class= "button" type = "submit" [disabled]="!checkoutForm.valid"> Purchase </button>
+</form>
