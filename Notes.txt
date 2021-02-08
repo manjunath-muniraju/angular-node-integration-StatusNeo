@@ -1,0 +1,223 @@
+Step 1:
+download angular project my-first-project (mobile cart) and install dependency and the run the project
+Here there are changes in two files to integrate with node_training project, so that rest calls are made to get cart items (http://127.0.0.1:8393/api/cart/item) from node project
+File 1:
+	cart.service.ts: modified addToCart(product){} method
+File 2:
+	product-details.component.ts: modified addToCart(product){} method - used subscribe inside the method
+
+Ex:
+-- cart.serivce.ts --
+addToCart(product) {
+
+    this.cartService.addToCart(product).subscribe(() => {
+      window.alert('The product has been added to the cart!');
+    }, error => {
+      console.log('There is error while adding item.');
+    });
+  }
+
+-- product-details.component.ts---
+
+ addToCart(product) {
+
+    this.cartService.addToCart(product).subscribe(() => {
+      window.alert('The product has been added to the cart!');
+    }, error => {
+      console.log('There is error while adding item.');
+    });
+  }
+
+Step 2:
+
+download node project, install dependencies and run the project (cmd> node app). once it is up, use PostMan to test the Rest end point us working
+Below is PostMan configs:
+
+Method: POST
+URL: http://127.0.0.1:8393/api/cart/item
+Body/raw: {"name":"second-first"}
+And select, JSON(application/json), by default dropdrown selection will be Text (this option comes next to raw radio button)
+no credentail required
+
+Response will be:
+{
+    "id": "74orzrz0F",
+    "item": "second-first"
+}
+
+this node project uses json file as DB, so any POST operation, the json values are stored as array in ecommDB.json file
+
+Below is notes for Node project:
+--------------------------------
+
+https://2014.jsconf.eu/speakers/philip-roberts-what-the-heck-is-the-event-loop-anyway.html
+
+Create folder - node_training
+Open this folder in VC
+Create app.js and put console.log('Good morning')
+Init app - npm init
+In terminal type - node app
+
+----
+
+const http = require('http');
+const hostname = '127.0.0.1';
+const port = 3000;
+const server = http.createServer((req, res) => {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/plain');
+    res.end('Hello World');
+});
+server.listen(port, hostname, () => {
+    console.log(`Server running at http://${hostname}:${port}/`);
+});
+
+-----
+
+Install nodemon for instant hot deployment
+https://www.npmjs.com/package/nodemon
+
+Npm install nodemon
+
+To run : nodemon app
+
+------
+
+"use strict";
+
+const http = require('http');
+const express = require("express");
+
+const bodyParser = require("body-parser");
+let httpServer = null;
+
+function initialize() {
+    return new Promise((resolve, reject) => {
+
+        const app = express();
+        httpServer = http.createServer(app);
+        app.use((req, res, next) => {
+            res.setHeader('Access-Control-Allow-Origin', 'http://127.0.0.1');
+            res.setHeader("Access-Control-Allow-Headers",
+                "Origin, X-Requested-With, Content-Type, Accept");
+            res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+            next();
+        });
+        app.use(bodyParser.urlencoded({ extended: true }));
+        app.use(bodyParser.json())
+
+        httpServer.listen('3000', err => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            resolve();
+        });
+
+    });
+}
+module.exports.initialize = initialize;
+
+async function startApp() {
+    console.log('Starting application');
+    try {
+        console.log('Initializing web server module');
+        await initialize();
+    } catch (err) {
+        console.error(err);
+
+        process.exit(1); // Non-zero failure code
+    }
+}
+startApp();
+
+
+
+This give error saying express not found
+
+Intsall express - npm I express
+clear
+Node app
+
+Now app will start
+
+Express will allows to use rest apis 
+
+------
+
+With config.js:
+
+"use strict";
+
+const http = require('http');
+const express = require("express");
+
+const bodyParser = require("body-parser");
+let httpServer = null;
+const fs = require('fs');
+
+function initialize() {
+    return new Promise((resolve, reject) => {
+
+        const app = express();
+        httpServer = http.createServer(app);
+
+        let appConfig = JSON.parse(fs.readFileSync('./app-config/app-config.json'));
+
+
+        app.use((req, res, next) => {
+            res.setHeader('Access-Control-Allow-Origin', appConfig.allowed_url);
+            res.setHeader("Access-Control-Allow-Headers",
+                "Origin, X-Requested-With, Content-Type, Accept");
+            res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+            next();
+        });
+        app.use(bodyParser.urlencoded({ extended: true }));
+        app.use(bodyParser.json())
+
+        httpServer.listen(appConfig.api_port, err => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            resolve();
+        });
+
+    });
+}
+module.exports.initialize = initialize;
+
+async function startApp() {
+    console.log('Starting application');
+    try {
+        console.log('Initializing web server module');
+        await initialize();
+    } catch (err) {
+        console.error(err);
+
+        process.exit(1); // Non-zero failure code
+    }
+}
+startApp();
+
+
+
+
+App.js:
+
+{
+    "api_port": "8393",
+    "base_url": "/api",
+    "allowed_url": "http://localhost:4200"
+}
+
+----------
+
+npm i shortid
+
+npm i node-json-db
+--------------
+
+"allowed_url": "http://localhost:4200"
+
+--------------------------------------------------------------------
